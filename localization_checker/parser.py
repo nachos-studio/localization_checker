@@ -81,7 +81,14 @@ def update_lang_file(meta: List[str], strings: Dict[str, str], path: Path):
                 lang_file.write(line)
                 if line != '\n':
                     lang_file.write('\n')
-    pass
+
+
+def check_translations(meta: List[str], strings: Dict[str, str], path: Path):
+    for i, line in enumerate(meta):
+        if line in strings:
+            # кидать варнинг если нет перевода
+            if strings[line] == '"";':
+                print(f'{path}:{i + 1}:{len(line) + 4}: warning: Translation for key {line} not found.')
 
 
 def actualize_languages(path: str, main_lang='en'):
@@ -92,6 +99,7 @@ def actualize_languages(path: str, main_lang='en'):
 
     for localizable_name in localizable_names:
         main_lang_meta, main_lang_strings = parse_localizable_file(main_folder / localizable_name)
+        check_translations(main_lang_meta, main_lang_strings, main_folder / localizable_name)
         for lang_folder in other_folders:
             other_localizable_path = lang_folder / localizable_name
             if other_localizable_path.is_file():
@@ -104,3 +112,5 @@ def actualize_languages(path: str, main_lang='en'):
                 dirty = True
             if dirty:
                 update_lang_file(main_lang_meta, new_lang_strings, lang_folder / localizable_name)
+            else:
+                check_translations(main_lang_meta, new_lang_strings, lang_folder / localizable_name)
