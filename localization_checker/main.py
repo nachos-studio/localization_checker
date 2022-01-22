@@ -1,7 +1,7 @@
 import sys
 import argparse
 
-from parser import actualize_languages
+from localization_checker.parser import actualize_languages
 
 
 def create_parser():
