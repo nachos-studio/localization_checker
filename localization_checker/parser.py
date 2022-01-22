@@ -60,7 +60,7 @@ def compare(main_strings: Dict[str, str], other_strings: Dict[str, str]) -> Tupl
             dirty_flag = True
 
     # уберем ключи, которых нет в главном языке
-    for key in new_other_strings.keys():
+    for key in list(new_other_strings.keys()):
         if key not in main_strings:
             del new_other_strings[key]
             dirty_flag = True
