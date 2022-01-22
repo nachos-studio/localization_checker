@@ -11,7 +11,6 @@ class LineTypeRegex(str, Enum):
 
     COMMENT = r'^//.*'
     EMPTY_LINE = r'^\n$'
-    # KEY_LINE = r'^\".*\"\s?=\s?\".*\";$'
     KEY_LINE = r'(?P<key>^\".*\")\s?=\s?(?P<value>\".*\";$)'
 
 
@@ -40,7 +39,6 @@ def parse_localizable_file(path: Path) -> Tuple[List[str], Dict[str, str]]:
             elif result_line := re.search(LineTypeRegex.EMPTY_LINE.value, line):
                 result_meta.append(result_line.group())
             elif result_line := re.search(LineTypeRegex.KEY_LINE.value, line):
-                # result_lines.append(result_line.group() + '"')
                 key = result_line.group('key')
                 value = result_line.group('value')
                 result_meta.append(key)
