@@ -11,6 +11,7 @@ setuptools.setup(
     description="Package to compare and complete all languages in your project with main language",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    url="https://github.com/nachos-studio/localization_checker",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
