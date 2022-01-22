@@ -19,3 +19,5 @@ if __name__ == '__main__':
         raise AttributeError('Path to source directory (-p or --path argument) is required')
 
     actualize_languages(arguments.path, arguments.main_lang)
+
+    print('Compare and complete all languages is done.')

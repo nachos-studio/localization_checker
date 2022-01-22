@@ -77,7 +77,7 @@ def update_lang_file(meta: List[str], strings: Dict[str, str], path: Path):
                 lang_file.write(' = '.join([line, strings[line]]))
                 # кидать варнинг если нет перевода
                 if strings[line] == '"";':
-                    print(f'{path}:{i}:{len(line) + 4}: warning: String format error.')
+                    print(f'{path}:{i}:{len(line) + 4}: warning: Translation not found.')
                 lang_file.write('\n')
             else:
                 lang_file.write(line)
