@@ -44,7 +44,7 @@ def parse_localizable_file(path: Path) -> Tuple[List[str], Dict[str, str]]:
                 result_meta.append(key)
                 result_strings[key] = value
             else:
-                print(f'{path}:{i}:1: error: String format error.')
+                print(f'{path}:{i + 1}:1: error: String format error.')
                 exit(0)
 
     return result_meta, result_strings
@@ -75,7 +75,7 @@ def update_lang_file(meta: List[str], strings: Dict[str, str], path: Path):
                 lang_file.write(' = '.join([line, strings[line]]))
                 # кидать варнинг если нет перевода
                 if strings[line] == '"";':
-                    print(f'{path}:{i}:{len(line) + 4}: warning: Translation not found.')
+                    print(f'{path}:{i + 1}:{len(line) + 4}: warning: Translation for key {line} not found.')
                 lang_file.write('\n')
             else:
                 lang_file.write(line)
