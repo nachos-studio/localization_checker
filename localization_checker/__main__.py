@@ -12,6 +12,7 @@ def create_parser():
     parser.add_argument('-u', '--find_useless', default='---')
     parser.add_argument('-pf', '--prefix', default='')
     parser.add_argument('-ic', '--ignore_case', action="store_true")
+    parser.add_argument('-sip', '--skip_info_plist', action="store_true")
 
     return parser
 
@@ -28,6 +29,13 @@ if __name__ == '__main__':
     elif arguments.find_useless != '---' and not os.path.exists(arguments.find_useless):
         raise AttributeError('Path to project directory does not exist')
     code_path = arguments.find_useless if arguments.find_useless != '---' else None
-    actualize_languages(arguments.path, arguments.main_lang, code_path, arguments.prefix, arguments.ignore_case)
+    actualize_languages(
+        arguments.path,
+        arguments.main_lang,
+        code_path,
+        arguments.prefix,
+        arguments.ignore_case,
+        arguments.skip_info_plist
+    )
 
     print('Compare and complete all languages is done.')

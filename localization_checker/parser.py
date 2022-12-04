@@ -106,7 +106,8 @@ def actualize_languages(path: str,
                         main_lang: str = 'en',
                         find_useless: Optional[str] = None,
                         prefix: str = '',
-                        ignore_case: bool = False):
+                        ignore_case: bool = False,
+                        skip_info_plist: bool = True):
     main_folder, other_folders = find_lang_folders(path=path, main_lang=main_lang)
 
     localizable_paths = list(main_folder.glob('*'))
@@ -119,12 +120,15 @@ def actualize_languages(path: str,
     for localizable_name in localizable_names:
         main_lang_meta, main_lang_strings = parse_localizable_file(main_folder / localizable_name)
         if find_useless:
-            check_useless_keys(meta=main_lang_meta,
-                               strings=main_lang_strings,
-                               path=main_folder / localizable_name,
-                               code_pile=code_pile,
-                               prefix=prefix,
-                               ignore_case=ignore_case)
+            if skip_info_plist and localizable_name.endswith("InfoPlist.strings"):
+                pass
+            else:
+                check_useless_keys(meta=main_lang_meta,
+                                   strings=main_lang_strings,
+                                   path=main_folder / localizable_name,
+                                   code_pile=code_pile,
+                                   prefix=prefix,
+                                   ignore_case=ignore_case)
         all_localizable_keys.extend(main_lang_strings.keys())
         check_translations(main_lang_meta, main_lang_strings, main_folder / localizable_name)
         for lang_folder in other_folders:
