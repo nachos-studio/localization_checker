@@ -86,23 +86,46 @@ def update_lang_file(meta: List[str], strings: Dict[str, str], path: Path):
 
 
 def check_translations(meta: List[str], strings: Dict[str, str], path: Path):
+    strings_count = len(strings.items())
+    no_translation_count = 0
+    lang = path.parent.name.split('.')[0]
+    warnings = ''
     for i, line in enumerate(meta):
         if line in strings:
             # кидать варнинг если нет перевода
             if strings[line] == '"";':
-                lang = path.parent.name.split('.')[0]
-                print(f'{path.absolute()}:{i + 1}:{len(line) + 4}: '
-                      f'warning: Translation for key {line} in language \"{lang}\" not found.')
+                no_translation_count += 1
+                warnings += f'{path.absolute()}:{i + 1}:{len(line) + 4}: warning: Translation for key {line} in language \"{lang}\" not found.'
+    if no_translation_count < strings_count:
+        print(warnings)
+    else:
+        print(f'{path.absolute()}:{1}:{1}: warning: Translation for all keys in language \"{lang}\" not found.')
 
 
-def actualize_languages(path: str, main_lang='en'):
-    main_folder, other_folders = find_lang_folders(path=path, main_lang='en')
+def actualize_languages(path: str,
+                        main_lang: str = 'en',
+                        find_useless: Optional[str] = None,
+                        prefix: str = '',
+                        ignore_case: bool = False):
+    main_folder, other_folders = find_lang_folders(path=path, main_lang=main_lang)
 
     localizable_paths = list(main_folder.glob('*'))
     localizable_names = [path.name for path in localizable_paths if path.name.endswith('.strings')]
 
+    all_localizable_keys = []
+    code_pile = ''
+    if find_useless:
+        code_pile = get_all_code(Path(find_useless))
     for localizable_name in localizable_names:
         main_lang_meta, main_lang_strings = parse_localizable_file(main_folder / localizable_name)
+        if find_useless:
+            check_useless_keys(meta=main_lang_meta,
+                               strings=main_lang_strings,
+                               path=main_folder / localizable_name,
+                               code_pile=code_pile,
+                               prefix=prefix,
+                               ignore_case=ignore_case)
+        all_localizable_keys.extend(main_lang_strings.keys())
         check_translations(main_lang_meta, main_lang_strings, main_folder / localizable_name)
         for lang_folder in other_folders:
             other_localizable_path = lang_folder / localizable_name
@@ -118,3 +141,24 @@ def actualize_languages(path: str, main_lang='en'):
                 update_lang_file(main_lang_meta, new_lang_strings, lang_folder / localizable_name)
             else:
                 check_translations(main_lang_meta, new_lang_strings, lang_folder / localizable_name)
+
+
+def get_all_code(project_path: Path) -> str:
+    swift_paths = list(project_path.glob('**/*.swift'))
+    code_pile = ''
+    for path in swift_paths:
+        with open(path, 'r') as f:
+            code_pile += f.read()
+    return code_pile
+
+
+def check_useless_keys(meta: List[str], strings: Dict[str, str], path: Path, code_pile, prefix, ignore_case: bool):
+    lang = path.parent.name.split('.')[0]
+    search_flags = re.IGNORECASE if ignore_case else 0
+    for i, line in enumerate(meta):
+        # кидать варнинг если ключ не используется в проекте
+        key = f'{prefix}.{line[1:-1]}'
+        if line in strings and (re.search(key, code_pile, search_flags) is None):
+            print(f'{path.absolute()}:{i + 1}:{1}: '
+                  f'warning: Localizable key {line} in all languages never used.')
+
