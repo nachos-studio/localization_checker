@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="localization-checker",
-    version="0.0.3",
+    version="0.0.7",
     author="Armine Romanyuta",
     author_email="romanyuta.armine@gmail.com",
     description="Package to compare and complete all languages in your project with main language",
